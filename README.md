@@ -1,11 +1,11 @@
-# :alien: :computer Rest Api Go
-    You Can Explore Docs in :
-    1. [GORM](http://doc.gorm.io)
-    2. [GIN](https://github.com/gin-gonic/gin)
-    3. [AUth JWT](github.com/dgrijalva/jwt-go)
+# :alien: :computer: Rest Api Go
+   You Can Explore Docs in :
+   1. [GORM](http://doc.gorm.io)
+   2. [GIN](https://github.com/gin-gonic/gin)
+   3. [AUth JWT](github.com/dgrijalva/jwt-go)
 ## How to run
-### 1. clone This Project
-    git clone
+### 1. Clone This Project
+    git clone https://github.com/ilham-dev/rest-api-go-jwt.git
 ### 2. First Install Package You Need
     go get github.com/gin-gonic/gin
     go get github.com/jinzhu/gorm
@@ -20,4 +20,4 @@
 ### 5. You Can Test This API With Postman
     import my Colection By URL https://www.getpostman.com/collections/05c236aa06147d41669d
     
-## :alien: :computer Happy Code
+## :alien: :computer: Happy Code
