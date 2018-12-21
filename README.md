@@ -2,7 +2,7 @@
    You Can Explore Docs in :
    1. [GORM](http://doc.gorm.io)
    2. [GIN](https://github.com/gin-gonic/gin)
-   3. [AUth JWT](github.com/dgrijalva/jwt-go)
+   3. [AUth JWT](https://github.com/dgrijalva/jwt-go)
 ## How to run
 ### 1. Clone This Project
     git clone https://github.com/ilham-dev/rest-api-go-jwt.git
