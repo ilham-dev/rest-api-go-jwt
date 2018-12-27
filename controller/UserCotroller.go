@@ -5,8 +5,8 @@ import (
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"rest-api-go-jwt/structs"
 	"net/http"
+	"rest-api-go-jwt/structs"
 	"time"
 )
 var (
@@ -17,22 +17,28 @@ func (idb *InDB) GetUser(c *gin.Context) {
 	var (
 		user structs.User
 		result gin.H
+		statuscode int
+		messages string
 	)
 	id := c.Param("id")
 	err := idb.DB.Where("id = ?", id).First(&user).Error
 	if err != nil {
+		statuscode = 404
+		messages = "Not Found"
 		result = gin.H{
 			"result": err.Error(),
 			"count":  0,
 		}
 	} else {
+		statuscode = 200
+		messages = "Success Get Data User"
 		result = gin.H{
 			"result": user,
 			"count":  1,
 		}
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, structs.Json{statuscode,messages,result})
 }
 
 // get all data in person
@@ -40,24 +46,26 @@ func (idb *InDB) GetUsers(c *gin.Context) {
 	var (
 		persons []structs.User
 		result  gin.H
+		statuscode int
+		messages string
 	)
 
 	idb.DB.Find(&persons)
+	statuscode = 200
+	messages = "Success Get All Users"
 	if len(persons) <= 0 {
 		result = gin.H{
-			"status": 200,
 			"result": nil,
 			"count":  0,
 		}
 	} else {
 		result = gin.H{
-			"status": 200,
 			"result": persons,
 			"count":  len(persons),
 		}
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, structs.Json{statuscode,messages,result})
 }
 
 // create new data to the database
@@ -65,6 +73,8 @@ func (idb *InDB) CreateUser(c *gin.Context) {
 	var (
 		person structs.User
 		result gin.H
+		statuscode int
+		messages string
 	)
 
 	user_name := c.PostForm("username")
@@ -75,11 +85,12 @@ func (idb *InDB) CreateUser(c *gin.Context) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	person.Password = string(hashedPassword)
 	idb.DB.Create(&person)
+	statuscode = 200
+	messages = "Success Register"
 	result = gin.H{
-		"status": 200,
 		"result": person,
 	}
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, structs.Json{statuscode,messages,result})
 }
 
 // update data with {id} as query
@@ -91,13 +102,16 @@ func (idb *InDB) UpdateUser(c *gin.Context) {
 		person    structs.User
 		newPerson structs.User
 		result    gin.H
+		statuscode int
+		messages string
 	)
 
 	err := idb.DB.First(&person, id).Error
 	println(err)
 	if err != nil {
+		statuscode = 404
+		messages = "data not found"
 		result = gin.H{
-			"status": 404,
 			"result": "data not found",
 		}
 	}
@@ -105,17 +119,20 @@ func (idb *InDB) UpdateUser(c *gin.Context) {
 	newPerson.Email = email
 	err = idb.DB.Model(&person).Updates(newPerson).Error
 	if err != nil {
+		statuscode = 400
+		messages = "update failed"
 		result = gin.H{
-			"status": 400,
-			"result": "update failed",
+			"result": err,
 		}
 	} else {
+		statuscode = 200
+		messages = "successfully updated data"
 		result = gin.H{
 			"status": 200,
-			"result": "successfully updated data",
+			"result": err,
 		}
 	}
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, structs.Json{statuscode,messages,result})
 }
 
 // delete data with {id}
@@ -123,37 +140,42 @@ func (idb *InDB) DeleteUser(c *gin.Context) {
 	var (
 		person structs.User
 		result gin.H
+		statuscode int
+		messages string
 	)
 	id := c.Param("id")
 	err := idb.DB.First(&person, id).Error
 	if err != nil {
-		result = gin.H{
-			"status": 404,
-			"result": "data not found",
-		}
+		statuscode = 400
+		messages = "data not found"
+		result = gin.H{}
 	}
 	println(id)
 	err = idb.DB.Where("id = ?",id).Delete(&person).Error
 	fmt.Println(err)
 	if err != nil {
+		statuscode = 400
+		messages = "delete failed"
 		result = gin.H{
-			"status": 400,
-			"result": "delete failed",
+			"result": err,
 		}
 	} else {
+		statuscode = 200
+		messages = "Data deleted successfully"
 		result = gin.H{
-			"status": 200,
-			"result": "Data deleted successfully",
+			"result": err,
 		}
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, structs.Json{statuscode,messages,result})
 }
 
 func (idb *InDB) Login(c *gin.Context){
 	var (
 		user structs.User
 		result gin.H
+		statuscode int
+		messages string
 	)
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -175,25 +197,27 @@ func (idb *InDB) Login(c *gin.Context){
 		// Sign and get the complete encoded token as a string
 		tokenString, err := token.SignedString([]byte(mysupersecretpassword))
 		if err != nil {
+			statuscode = 500
+			messages = "failed generate password"
 			result = gin.H{
-				"status": 500,
-				"result": "failed generate password",
+				"error" : err,
 			}
 		}else{
+			statuscode = 200
+			messages = "succeess generate password"
 			result = gin.H{
-				"status": 200,
 				"token": tokenString,
-				"result": "succeess generate password",
 			}
 		}
 	} else {
 		//login failed
+		statuscode = 400
+		messages = "username or password wrong"
 		result = gin.H{
-			"status": 400,
 			"result": "username or password wrong",
 		}
 	}
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, structs.Json{statuscode,messages,result})
 }
 
 func Index(c *gin.Context)  {
