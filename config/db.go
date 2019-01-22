@@ -18,3 +18,5 @@ func DBInit() *gorm.DB {
 	db.AutoMigrate(structs.Book{})
 	return db
 }
+
+//tes ji
