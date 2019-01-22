@@ -19,5 +19,6 @@ func DBInit() *gorm.DB {
 	return db
 }
 
+// lagi
 //tes ji
 //tes ilham
