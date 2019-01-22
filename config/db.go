@@ -1,8 +1,8 @@
 package config
 
 import (
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"rest-api-go-jwt/structs"
 )
 
@@ -20,3 +20,4 @@ func DBInit() *gorm.DB {
 }
 
 //tes ji
+//tes ilham
